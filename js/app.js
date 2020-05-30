@@ -30,16 +30,20 @@ function addListeners() {
     for(var i = 0; i < anchorArray.length; i++){
         anchorArray[i].addEventListener('click', function () {
             event.preventDefault();
+            const anchorArrayInner = document.querySelectorAll(".menu__link");
+            for(var x = 0; x < anchorArrayInner.length; x++){
+                anchorArrayInner[x].classList.remove("your-active-class");
+            }
+            this.classList.add("your-active-class");
             document.getElementById(this.attributes[0].value.substr(1)).scrollIntoView({
                 behavior: 'smooth'
             });
-            var sectionArray = document.getElementsByTagName("SECTION");
-            for(var j = 0; j < sectionArray.length; j++){
-                if(sectionArray[j].id == this.attributes[0].value.substr(1)){
-                    sectionArray[j].className = "your-active-class";
+            for(var j = 0; j < sections.length; j++){
+                if(sections[j].id == this.attributes[0].value.substr(1)){
+                    sections[j].className = "your-active-class";
                 }
                 else{
-                    sectionArray[j].className = "";
+                    sections[j].className = "";
                 }
             }
         });
@@ -56,8 +60,12 @@ function addListeners() {
 function buildNav(){
     for(var i = 0; i < sections.length; i++){
         var newListItem = document.createElement("LI");
-        newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link">` +sections[i].dataset.nav + "</a>";
-        //newListItem.classList.add("menu__link");
+        if(i == 0){
+            newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link your-active-class">` +sections[i].dataset.nav + "</a>";
+        }
+        else{
+            newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link">` +sections[i].dataset.nav + "</a>";
+        }
         navList.append(newListItem);
     };
 }
@@ -81,7 +89,12 @@ buildNav();
 addListeners();
 
 // Set sections as active
-window.addEventListener('scroll', function (){
 
-})
+
+window.addEventListener('load', function(){
+    //this.scrollTo(0,0);
+    setTimeout(function () {
+        window.scrollTo(0, 0);
+    },2);
+});
 
