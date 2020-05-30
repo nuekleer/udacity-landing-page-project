@@ -89,12 +89,25 @@ buildNav();
 addListeners();
 
 // Set sections as active
-
+window.addEventListener('scroll', function (){
+    for(var j = 0; j < sections.length; j++){
+        if(window.pageYOffset == 0){
+            sections[0].className = "your-active-class";
+        }
+        if(sections[j].offsetTop < window.pageYOffset){
+            sections[j].className = "your-active-class";
+        }
+        else{
+            sections[j].className = "";
+        }
+    }
+});
 
 window.addEventListener('load', function(){
+    //had to add a set timeout or scroll would not work
     //this.scrollTo(0,0);
     setTimeout(function () {
         window.scrollTo(0, 0);
-    },2);
+    },20);
 });
 
