@@ -19,7 +19,7 @@
 */
 var navList = document.getElementById("navbar__list");
 var sections = document.getElementsByTagName("SECTION");
-var windowHeight = window.innerHeight;
+var height = window.innerHeight;
 
 /**
  * End Global Variables
@@ -27,6 +27,7 @@ var windowHeight = window.innerHeight;
  * 
 */
 
+//loops through sections and anchors and sets the id passed in to active - removes any others
 function activeSection(sectionName){
     for(var i = 0; i < sections.length; i++){
         sections[i].className = "";
@@ -43,32 +44,21 @@ function activeSection(sectionName){
     }
 }
 
-function checkPosition() {
+//check which section is currently visible and call helper to set style
+function inView() {
     for (var i = 0; i < sections.length; i++) {
-      var section = sections[i];
-      var positionFromTop = sections[i].getBoundingClientRect().top;
+        var section = sections[i];
+        var top = sections[i].getBoundingClientRect().top;
 
-      if (positionFromTop - windowHeight <= 0) {
-        activeSection(sections[i].id);
-      }
+        if (top - height <= 0) {
+            activeSection(sections[i].id);
+        }
     }
-  }
+}
 
-  function init() {
-    windowHeight = window.innerHeight;
-  }
-
-function addListeners() {
-    const anchorArray = document.querySelectorAll(".menu__link");
-    for(var i = 0; i < anchorArray.length; i++){
-        anchorArray[i].addEventListener('click', function () {
-            event.preventDefault();
-            activeSection(this.attributes[0].value.substr(1));
-            document.getElementById(this.attributes[0].value.substr(1)).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    }
+//just get the new size
+function getWindowSize() {
+    height = window.innerHeight;
 }
 
 /**
@@ -91,11 +81,19 @@ function buildNav(){
     };
 }
 
-// Add class 'active' to section when near top of viewport
-
-
-// Scroll to anchor ID using scrollTO event
-
+//add listeners to each menu item to scroll when clicked
+function addListeners() {
+    const anchorArray = document.querySelectorAll(".menu__link");
+    for(var i = 0; i < anchorArray.length; i++){
+        anchorArray[i].addEventListener('click', function () {
+            event.preventDefault();
+            activeSection(this.attributes[0].value.substr(1));
+            document.getElementById(this.attributes[0].value.substr(1)).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    }
+}
 
 /**
  * End Main Functions
@@ -109,10 +107,13 @@ buildNav();
 // Scroll to section on link click
 addListeners();
 
-// Set sections as active
-window.addEventListener('scroll', checkPosition);
-window.addEventListener('resize', init);
+//change style when section is in view
+window.addEventListener('scroll', inView);
 
+//reset window size if screen size changes
+window.addEventListener('resize', getWindowSize);
+
+//if page is refreshed start again at the top
 window.addEventListener('load', function(){
     //had to add a set timeout or scroll would not work
     //this.scrollTo(0,0);
