@@ -19,33 +19,54 @@
 */
 var navList = document.getElementById("navbar__list");
 var sections = document.getElementsByTagName("SECTION");
+var windowHeight = window.innerHeight;
 
 /**
  * End Global Variables
  * Start Helper Functions
  * 
 */
+
+function activeSection(sectionName){
+    for(var i = 0; i < sections.length; i++){
+        sections[i].className = "";
+        if (sections[i].id == sectionName){
+            sections[i].className = "your-active-class";
+        }
+    }
+    const anchorArray = document.querySelectorAll(".menu__link");
+    for(var i = 0; i < anchorArray.length; i++){
+        anchorArray[i].classList.remove("your-active-class");
+        if(anchorArray[i].attributes[0].value.substr(1) == sectionName){
+            anchorArray[i].classList.add("your-active-class"); 
+        }
+    }
+}
+
+function checkPosition() {
+    for (var i = 0; i < sections.length; i++) {
+      var section = sections[i];
+      var positionFromTop = sections[i].getBoundingClientRect().top;
+
+      if (positionFromTop - windowHeight <= 0) {
+        activeSection(sections[i].id);
+      }
+    }
+  }
+
+  function init() {
+    windowHeight = window.innerHeight;
+  }
+
 function addListeners() {
     const anchorArray = document.querySelectorAll(".menu__link");
     for(var i = 0; i < anchorArray.length; i++){
         anchorArray[i].addEventListener('click', function () {
             event.preventDefault();
-            const anchorArrayInner = document.querySelectorAll(".menu__link");
-            for(var x = 0; x < anchorArrayInner.length; x++){
-                anchorArrayInner[x].classList.remove("your-active-class");
-            }
-            this.classList.add("your-active-class");
+            activeSection(this.attributes[0].value.substr(1));
             document.getElementById(this.attributes[0].value.substr(1)).scrollIntoView({
                 behavior: 'smooth'
             });
-            for(var j = 0; j < sections.length; j++){
-                if(sections[j].id == this.attributes[0].value.substr(1)){
-                    sections[j].className = "your-active-class";
-                }
-                else{
-                    sections[j].className = "";
-                }
-            }
         });
     }
 }
@@ -61,10 +82,10 @@ function buildNav(){
     for(var i = 0; i < sections.length; i++){
         var newListItem = document.createElement("LI");
         if(i == 0){
-            newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link your-active-class">` +sections[i].dataset.nav + "</a>";
+            newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link your-active-class">${sections[i].dataset.nav}</a>`;
         }
         else{
-            newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link">` +sections[i].dataset.nav + "</a>";
+            newListItem.innerHTML = `<a href=#${sections[i].id} class="menu__link">${sections[i].dataset.nav}</a>`;
         }
         navList.append(newListItem);
     };
@@ -89,19 +110,8 @@ buildNav();
 addListeners();
 
 // Set sections as active
-window.addEventListener('scroll', function (){
-    for(var j = 0; j < sections.length; j++){
-        if(window.pageYOffset == 0){
-            sections[0].className = "your-active-class";
-        }
-        if(sections[j].offsetTop < window.pageYOffset){
-            sections[j].className = "your-active-class";
-        }
-        else{
-            sections[j].className = "";
-        }
-    }
-});
+window.addEventListener('scroll', checkPosition);
+window.addEventListener('resize', init);
 
 window.addEventListener('load', function(){
     //had to add a set timeout or scroll would not work
